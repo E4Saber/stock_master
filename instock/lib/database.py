@@ -3,6 +3,7 @@
 
 import logging
 import os
+from urllib.parse import quote
 import pymysql
 from sqlalchemy import create_engine
 from sqlalchemy.types import NVARCHAR
@@ -13,36 +14,44 @@ __date__ = '2023/3/10 '
 
 db_host = "localhost"  # 数据库服务主机
 db_user = "root"  # 数据库访问用户
-db_password = "root"  # 数据库访问密码
+db_password = "XQL@qtanny911201"  # 数据库访问密码
 db_database = "instockdb"  # 数据库名称
 db_port = 3306  # 数据库服务端口
 db_charset = "utf8mb4"  # 数据库字符集
 
 # 使用环境变量获得数据库,docker -e 传递
-_db_host = os.environ.get('db_host')
-if _db_host is not None:
-    db_host = _db_host
-_db_user = os.environ.get('db_user')
-if _db_user is not None:
-    db_user = _db_user
-_db_password = os.environ.get('db_password')
-if _db_password is not None:
-    db_password = _db_password
-_db_database = os.environ.get('db_database')
-if _db_database is not None:
-    db_database = _db_database
-_db_port = os.environ.get('db_port')
-if _db_port is not None:
-    db_port = int(_db_port)
+# _db_host = os.environ.get('db_host')
+# if _db_host is not None:
+#     db_host = _db_host
+# _db_user = os.environ.get('db_user')
+# if _db_user is not None:
+#     db_user = _db_user
+# _db_password = os.environ.get('db_password')
+# if _db_password is not None:
+#     db_password = _db_password
+# _db_database = os.environ.get('db_database')
+# if _db_database is not None:
+#     db_database = _db_database
+# _db_port = os.environ.get('db_port')
+# if _db_port is not None:
+#     db_port = int(_db_port)
+
+
+# URL 编码密码
+print(db_password)
+print(str(db_password))
+print(quote(str(db_password)))
+encoded_password = quote(str(db_password))
 
 MYSQL_CONN_URL = "mysql+pymysql://%s:%s@%s:%s/%s?charset=%s" % (
-    db_user, db_password, db_host, db_port, db_database, db_charset)
+    db_user, encoded_password, db_host, db_port, db_database, db_charset)
 logging.info(f"数据库链接信息：{ MYSQL_CONN_URL}")
+print(f"数据库链接信息：{ MYSQL_CONN_URL}")
 
-MYSQL_CONN_DBAPI = {'host': db_host, 'user': db_user, 'password': db_password, 'database': db_database,
+MYSQL_CONN_DBAPI = {'host': db_host, 'user': db_user, 'password': encoded_password, 'database': db_database,
                     'charset': db_charset, 'port': db_port, 'autocommit': True}
 
-MYSQL_CONN_TORNDB = {'host': f'{db_host}:{str(db_port)}', 'user': db_user, 'password': db_password,
+MYSQL_CONN_TORNDB = {'host': f'{db_host}:{str(db_port)}', 'user': db_user, 'password': encoded_password,
                      'database': db_database, 'charset': db_charset, 'max_idle_time': 3600, 'connect_timeout': 1000}
 
 
